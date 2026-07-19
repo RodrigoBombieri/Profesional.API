@@ -1,0 +1,71 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+out/
+artifacts/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+
+#dotnet
+*.dbmdl
+*.pidb
+*.svclog
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Publish outputs
+publish/
+*.publishsettings
+
+# IIS Express and local DB
+IISExpress/
+*.mdf
+*.ldf
+*.ndf
+
+# User secrets
+secrets.json
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# Others
+*.vspscc
+*.vssscc
+
+# Ignore compiled binaries
+*.dll
+*.exe
+*.pdb
+*.app
+
+# End of file
