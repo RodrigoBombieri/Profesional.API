@@ -1,5 +1,7 @@
-using Profesional.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Profesional.Application.Interfaces;
+using Profesional.Application.Services;
+using Profesional.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,12 @@ builder.Services.AddSwaggerGen();
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContext")));
+
+// Register interface mapping so services depending on IApplicationDbContext can be resolved
+builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+
+// Services
+builder.Services.AddScoped<IPacienteService, PacienteService>();
 
 var app = builder.Build();
 
