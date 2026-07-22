@@ -20,6 +20,7 @@ builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequir
 
 // Services
 builder.Services.AddScoped<IPacienteService, PacienteService>();
+builder.Services.AddScoped<ISesionService, SesionService>();
 
 var app = builder.Build();
 
