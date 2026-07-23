@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Profesional.Application.DTOs;
 using Profesional.Application.Services;
 
@@ -6,6 +7,7 @@ namespace Profesional.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PacientesController : ControllerBase
     {
         private readonly IPacienteService _pacienteService;
@@ -16,6 +18,7 @@ namespace Profesional.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var pacientes = await _pacienteService.GetAllAsync();
