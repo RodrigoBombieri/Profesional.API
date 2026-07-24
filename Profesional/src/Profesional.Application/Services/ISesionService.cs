@@ -10,9 +10,11 @@ namespace Profesional.Application.Services
     public interface ISesionService
     {
         Task<IEnumerable<SesionResponseDto>> GetAllAsync();
-        Task<SesionResponseDto> GetByIdAsync(int id);
+        Task<IEnumerable<SesionResponseDto>> GetByPacienteIdAsync(int pacienteId);
+        Task<SesionResponseDto?> GetByIdAsync(int id);
         Task<SesionResponseDto> CreateAsync(SesionCreateDto dto);
-        Task<SesionResponseDto> UpdateAsync(int id, SesionCreateDto dto);
+        Task<SesionResponseDto?> UpdateAsync(int id, SesionCreateDto dto);
         Task<bool> DeleteAsync(int id);
+        Task<bool> CompletarSesionAsync(int id);
     }
 }

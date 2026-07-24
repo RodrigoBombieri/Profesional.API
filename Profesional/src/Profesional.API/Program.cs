@@ -73,8 +73,8 @@ builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequir
 
 // Services
 builder.Services.AddScoped<IPacienteService, PacienteService>();
-builder.Services.AddScoped<ISesionService, SesionService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ISesionService, SesionService>();
 
 var app = builder.Build();
 
