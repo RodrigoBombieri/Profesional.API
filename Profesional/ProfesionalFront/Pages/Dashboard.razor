@@ -1,0 +1,28 @@
+﻿@page "/dashboard"
+@using System.Text.Json
+@inject NavigationManager Navigation
+
+<h3>Dashboard</h3>
+<p>Bienvenido, @userName!</p>
+<button class="btn btn-danger" @onclick="Logout">Cerrar Sesión</button>
+
+@code {
+    private string userName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userJson = await localStorage.GetItemAsync<string>("user");
+        if (!string.IsNullOrEmpty(userJson))
+        {
+            var user = JsonSerializer.Deserialize<AuthResponse>(userJson);
+            userName = user?.Nombre ?? "Usuario";
+        }
+    }
+
+    private void Logout()
+    {
+        localStorage.RemoveItemAsync("token");
+        localStorage.RemoveItemAsync("user");
+        Navigation.NavigateTo("/login");
+    }
+}
