@@ -1,0 +1,30 @@
+﻿@page "/dashboard"
+@using System.Text.Json
+@using Profesional.Frontend.Models
+@inject NavigationManager Navigation
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<h3>Dashboard</h3>
+<p>Bienvenido, @userName!</p>
+<button class="btn btn-danger" @onclick="Logout">Cerrar Sesión</button>
+
+@code {
+    private string userName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userJson = await JS.InvokeAsync<string>("localStorage.getItem", "user");
+        if (!string.IsNullOrEmpty(userJson))
+        {
+            var user = JsonSerializer.Deserialize<AuthResponse>(userJson);
+            userName = user?.Nombre ?? "Usuario";
+        }
+    }
+
+    private async Task Logout()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "user");
+        Navigation.NavigateTo("/login");
+    }
+}

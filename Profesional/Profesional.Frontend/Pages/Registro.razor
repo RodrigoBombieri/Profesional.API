@@ -1,0 +1,52 @@
+﻿@page "/registro"
+@using Microsoft.AspNetCore.Components.Forms
+@using Profesional.Frontend.Models
+@using Profesional.Frontend.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<h3>Registro</h3>
+
+<EditForm Model="@registerModel" OnValidSubmit="@HandleRegister">
+    <div class="mb-2">
+        <label for="name" class="form-label">Nombre</label>
+        <InputText id="name" class="form-control" @bind="registerModel.Name" />
+    </div>
+    <div class="mb-2">
+        <label for="email" class="form-label">Email</label>
+        <InputText id="email" class="form-control" @bind="registerModel.Email" />
+    </div>
+    <div class="mb-2">
+        <label for="password" class="form-label">Contraseña</label>
+        <InputText id="password" type="password" class="form-control" @bind="registerModel.Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Registrarse</button>
+    <a href="/login" class="btn btn-link">¿Ya tenés cuenta? Ingresá</a>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger mt-3">@errorMessage</div>
+}
+
+@code {
+    private RegisterRequest registerModel = new();
+    private string? errorMessage;
+
+    private async Task HandleRegister()
+    {
+        var result = await AuthService.RegisterAsync(registerModel);
+        if (result != null)
+        {
+            // Guardar token en localStorage usando IJSRuntime
+            await JS.InvokeVoidAsync("localStorage.setItem", "token", result.Token);
+            await JS.InvokeVoidAsync("localStorage.setItem", "user", System.Text.Json.JsonSerializer.Serialize(result));
+            Navigation.NavigateTo("/dashboard");
+        }
+        else
+        {
+            errorMessage = "Email o contraseña incorrectos";
+        }
+    }
+}

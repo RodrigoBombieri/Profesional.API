@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/frontend/" />
+  <Folder Name="/frontend/">
+    <Project Path="Profesional.Frontend/Profesional.Frontend.csproj" Id="c3268279-9a8e-48fc-886b-124196e84073" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Profesional.API/Profesional.API.csproj" />
     <Project Path="src/Profesional.Application/Profesional.Application.csproj" />
