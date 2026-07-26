@@ -30,13 +30,30 @@ namespace Profesional.API.Middlewares
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             var response = new
             {
                 mensaje = "Ocurrió un error interno en el servidor.",
-                detalle = exception.Message // En desarrollo, podés mostrar más detalles
+                detalle = exception.Message,
+                // En desarrollo, podés incluir más detalles:
+                // stackTrace = exception.StackTrace
             };
+
+            // Manejar errores específicos
+            if (exception is UnauthorizedAccessException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                response = new { mensaje = "No autorizado", detalle = exception.Message };
+            }
+            else if (exception is ArgumentException || exception is InvalidOperationException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response = new { mensaje = "Solicitud inválida", detalle = exception.Message };
+            }
+            else
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
 
             var jsonResponse = JsonSerializer.Serialize(response);
             await context.Response.WriteAsync(jsonResponse);
