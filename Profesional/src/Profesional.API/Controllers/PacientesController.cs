@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Profesional.Application.DTOs;
+using Profesional.Application.Helpers;
 using Profesional.Application.Services;
 
 namespace Profesional.API.Controllers
@@ -19,9 +20,9 @@ namespace Profesional.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationParams paginationParams)
         {
-            var pacientes = await _pacienteService.GetAllAsync();
+            var pacientes = await _pacienteService.GetAllAsync(paginationParams);
             return Ok(pacientes);
         }
 

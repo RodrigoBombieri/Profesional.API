@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Profesional.Application.DTOs;
 using Profesional.Domain.Entities;
 using Profesional.Application.Interfaces;
+using Profesional.Application.Helpers;
 
 namespace Profesional.Application.Services
 {
@@ -17,13 +18,46 @@ namespace Profesional.Application.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<PacienteResponseDto>> GetAllAsync()
+        public async Task<PagedResponse<PacienteResponseDto>> GetAllAsync(PaginationParams paginationParams)
         {
-            var pacientes = await _context.Pacientes
-                .Where(p => p.Activo)
+            var query = _context.Pacientes
+                .Where(p => p.Activo == (paginationParams.Activo ?? true)); // Filtro por Activo
+
+            // Búsqueda por nombre o apellido
+            if (!string.IsNullOrEmpty(paginationParams.Search))
+            {
+                var search = paginationParams.Search.ToLower();
+                query = query.Where(p =>
+                    p.Nombre.ToLower().Contains(search) ||
+                    p.Apellido.ToLower().Contains(search) ||
+                    p.DNI.Contains(search) ||
+                    p.Email.ToLower().Contains(search));
+            }
+
+            // Ordenamiento
+            if (!string.IsNullOrEmpty(paginationParams.SortBy))
+            {
+                query = paginationParams.SortBy.ToLower() switch
+                {
+                    "nombre" => paginationParams.SortDescending ? query.OrderByDescending(p => p.Nombre) : query.OrderBy(p => p.Nombre),
+                    "apellido" => paginationParams.SortDescending ? query.OrderByDescending(p => p.Apellido) : query.OrderBy(p => p.Apellido),
+                    "fecharegistro" => paginationParams.SortDescending ? query.OrderByDescending(p => p.FechaRegistro) : query.OrderBy(p => p.FechaRegistro),
+                    _ => query.OrderBy(p => p.Id)
+                };
+            }
+            else
+            {
+                query = query.OrderBy(p => p.Id);
+            }
+
+            // Paginación
+            var totalRecords = await query.CountAsync();
+            var pacientes = await query
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
                 .ToListAsync();
 
-            return pacientes.Select(p => new PacienteResponseDto
+            var data = pacientes.Select(p => new PacienteResponseDto
             {
                 Id = p.Id,
                 Nombre = p.Nombre,
@@ -34,6 +68,8 @@ namespace Profesional.Application.Services
                 FechaRegistro = p.FechaRegistro,
                 Activo = p.Activo
             });
+
+            return new PagedResponse<PacienteResponseDto>(data, paginationParams.PageNumber, paginationParams.PageSize, totalRecords);
         }
 
         public async Task<PacienteResponseDto?> GetByIdAsync(int id)

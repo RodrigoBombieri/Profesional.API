@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Profesional.API.Middlewares;
 using Profesional.Application.Interfaces;
 using Profesional.Application.Services;
 using Profesional.Infrastructure.Data;
@@ -78,6 +79,9 @@ builder.Services.AddScoped<ISesionService, SesionService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 var app = builder.Build();
+
+// Add the exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
