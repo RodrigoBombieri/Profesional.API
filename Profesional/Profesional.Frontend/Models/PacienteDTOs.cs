@@ -50,16 +50,9 @@ namespace Profesional.Frontend.Models
     }
     public class PacienteDetalleDto : PacienteDto
     {
+        public string Direccion { get; set; } = string.Empty;
+        public string ObraSocial { get; set; } = string.Empty;
         public List<SesionDto> Sesiones { get; set; } = new();
     }
 
-    public class SesionDto
-    {
-        public int Id { get; set; }
-        public DateTime Fecha { get; set; }
-        public string TipoTratamiento { get; set; } = string.Empty;
-        public string? Observaciones { get; set; }
-        public int DuracionMinutos { get; set; }
-        public bool Completada { get; set; }
-    }
 }

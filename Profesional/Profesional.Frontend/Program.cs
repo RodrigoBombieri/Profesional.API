@@ -21,5 +21,6 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<PacienteService>();
+builder.Services.AddScoped<SesionService>();
 
 await builder.Build().RunAsync();

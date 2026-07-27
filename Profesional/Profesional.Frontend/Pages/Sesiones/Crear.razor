@@ -1,0 +1,67 @@
+﻿@page "/pacientes/{pacienteId:int}/sesiones/crear"
+@using Profesional.Frontend.Models
+@using Profesional.Frontend.Services
+@inject SesionService SesionService
+@inject NavigationManager Navigation
+
+<PageTitle>Nueva Sesión</PageTitle>
+
+<div class="page-header">
+    <h2>➕ Nueva Sesión</h2>
+    <p>Registrá una nueva sesión para el paciente</p>
+</div>
+
+<div class="form-container">
+    <SesionForm Sesion="@sesion"
+                OnValidSubmit="@HandleValidSubmit"
+                OnCancel="@Cancel"
+                IsLoading="@isLoading"
+                ErrorMessage="@errorMessage" />
+</div>
+
+@code {
+    [Parameter] public int PacienteId { get; set; }
+
+    private SesionCreateDto sesion = new();
+    private bool isLoading = false;
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        sesion.PacienteId = PacienteId;
+        sesion.Fecha = DateTime.Now;
+        sesion.DuracionMinutos = 30;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var result = await SesionService.CreateSesionAsync(sesion);
+            if (result != null)
+            {
+                Navigation.NavigateTo($"/pacientes/{PacienteId}");
+            }
+            else
+            {
+                errorMessage = "Error al crear la sesión. Verificá los datos.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo($"/pacientes/{PacienteId}");
+    }
+}

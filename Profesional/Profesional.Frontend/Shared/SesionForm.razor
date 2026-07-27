@@ -1,0 +1,80 @@
+﻿@using Profesional.Frontend.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject NavigationManager Navigation
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<EditForm Model="@Sesion" OnValidSubmit="@OnValidSubmit">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="fecha">Fecha *</label>
+                <InputDate id="fecha" class="form-control" @bind-value="Sesion.Fecha" />
+                <ValidationMessage For="@(() => Sesion.Fecha)" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="tipoTratamiento">Tipo de Tratamiento *</label>
+                <InputText id="tipoTratamiento" class="form-control" @bind-Value="Sesion.TipoTratamiento" />
+                <ValidationMessage For="@(() => Sesion.TipoTratamiento)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="duracionMinutos">Duración (minutos)</label>
+                <InputNumber id="duracionMinutos" class="form-control" @bind-Value="Sesion.DuracionMinutos" />
+                <ValidationMessage For="@(() => Sesion.DuracionMinutos)" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="proximaCita">Próxima Cita</label>
+                <InputDate id="proximaCita" class="form-control" @bind-Value="Sesion.ProximaCita" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3 form-check">
+                <InputCheckbox id="completada" class="form-check-input" @bind-Value="Sesion.Completada" />
+                <label for="completada" class="form-check-label">Sesión Completada</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="observaciones">Observaciones</label>
+                <InputTextArea id="observaciones" class="form-control" @bind-Value="Sesion.Observaciones" rows="2" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="evolucion">Evolución</label>
+                <InputTextArea id="evolucion" class="form-control" @bind-Value="Sesion.Evolucion" rows="2" />
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary" disabled="@IsLoading">
+            @(IsLoading ? "Guardando..." : "Guardar")
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancelar</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public SesionCreateDto Sesion { get; set; } = new();
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public string ErrorMessage { get; set; } = string.Empty;
+    [Parameter] public bool IsLoading { get; set; } = false;
+}
