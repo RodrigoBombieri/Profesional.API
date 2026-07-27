@@ -89,6 +89,7 @@ builder.Services.AddScoped<ISesionService, SesionService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IReporteService, ReporteService>();
 
+
 var app = builder.Build();
 
 // Add the exception handling middleware

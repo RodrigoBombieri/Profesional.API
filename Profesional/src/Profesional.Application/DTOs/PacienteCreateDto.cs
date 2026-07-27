@@ -13,5 +13,7 @@ namespace Profesional.Application.DTOs
         public string DNI { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Direccion { get; set; } = string.Empty;
+        public string ObraSocial { get; set; } = string.Empty;
     }
 }

@@ -15,6 +15,8 @@ namespace Profesional.Domain.Entities
         public string DNI { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Direccion { get; set; } = string.Empty;
+        public string ObraSocial { get; set; } = string.Empty;
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
         public bool Activo { get; set; } = true;
 

@@ -1,0 +1,76 @@
+﻿@using Profesional.Frontend.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject NavigationManager Navigation
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<EditForm Model="@Paciente" OnValidSubmit="@OnValidSubmit">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="nombre">Nombre *</label>
+                <InputText id="nombre" class="form-control" @bind-value="Paciente.Nombre" />
+                <ValidationMessage For="@(() => Paciente.Nombre)" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="apellido">Apellido *</label>
+                <InputText id="apellido" class="form-control" @bind-value="Paciente.Apellido" />
+                <ValidationMessage For="@(() => Paciente.Apellido)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="dni">DNI *</label>
+                <InputText id="dni" class="form-control" @bind-value="Paciente.DNI" />
+                <ValidationMessage For="@(() => Paciente.DNI)" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="telefono">Teléfono</label>
+                <InputText id="telefono" class="form-control" @bind-value="Paciente.Telefono" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <InputText id="email" type="email" class="form-control" @bind-value="Paciente.Email" />
+                <ValidationMessage For="@(() => Paciente.Email)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="direccion">Dirección</label>
+        <InputText id="direccion" class="form-control" @bind-value="Paciente.Direccion" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="obrasocial">Obra Social</label>
+        <InputText id="obrasocial" class="form-control" @bind-value="Paciente.ObraSocial" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary" disabled="@IsLoading">
+            @(IsLoading ? "Guardando..." : "Guardar")
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancelar</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public PacienteCreateDto Paciente { get; set; } = new();
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public string ErrorMessage { get; set; } = string.Empty;
+    [Parameter] public bool IsLoading { get; set; } = false;
+}

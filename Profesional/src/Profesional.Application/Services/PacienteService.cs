@@ -65,6 +65,8 @@ namespace Profesional.Application.Services
                 DNI = p.DNI,
                 Telefono = p.Telefono,
                 Email = p.Email,
+                Direccion = p.Direccion,
+                ObraSocial = p.ObraSocial,
                 FechaRegistro = p.FechaRegistro,
                 Activo = p.Activo
             });
@@ -72,14 +74,15 @@ namespace Profesional.Application.Services
             return new PagedResponse<PacienteResponseDto>(data, paginationParams.PageNumber, paginationParams.PageSize, totalRecords);
         }
 
-        public async Task<PacienteResponseDto?> GetByIdAsync(int id)
+        public async Task<PacienteDetalleResponseDto?> GetByIdAsync(int id)
         {
             var paciente = await _context.Pacientes
+                .Include(p => p.Sesiones)
                 .FirstOrDefaultAsync(p => p.Id == id && p.Activo);
 
             if (paciente == null) return null;
 
-            return new PacienteResponseDto
+            return new PacienteDetalleResponseDto
             {
                 Id = paciente.Id,
                 Nombre = paciente.Nombre,
@@ -87,8 +90,26 @@ namespace Profesional.Application.Services
                 DNI = paciente.DNI,
                 Telefono = paciente.Telefono,
                 Email = paciente.Email,
+                Direccion = paciente.Direccion,
+                ObraSocial = paciente.ObraSocial,
                 FechaRegistro = paciente.FechaRegistro,
-                Activo = paciente.Activo
+                Activo = paciente.Activo,
+                Sesiones = paciente.Sesiones
+                    .OrderByDescending(s => s.Fecha)
+                    .Select(s => new SesionResponseDto
+                    {
+                        Id = s.Id,
+                        PacienteId = s.PacienteId,
+                        PacienteNombre = $"{paciente.Nombre} {paciente.Apellido}",
+                        Fecha = s.Fecha,
+                        TipoTratamiento = s.TipoTratamiento,
+                        Observaciones = s.Observaciones,
+                        Evolucion = s.Evolucion,
+                        ProximaCita = s.ProximaCita,
+                        DuracionMinutos = s.DuracionMinutos,
+                        Completada = s.Completada
+                    })
+                    .ToList()
             };
         }
 
@@ -101,6 +122,8 @@ namespace Profesional.Application.Services
                 DNI = dto.DNI,
                 Telefono = dto.Telefono,
                 Email = dto.Email,
+                Direccion = dto.Direccion,
+                ObraSocial = dto.ObraSocial,
                 FechaRegistro = DateTime.Now,
                 Activo = true
             };
@@ -116,6 +139,8 @@ namespace Profesional.Application.Services
                 DNI = paciente.DNI,
                 Telefono = paciente.Telefono,
                 Email = paciente.Email,
+                Direccion = paciente.Direccion,
+                ObraSocial = paciente.ObraSocial,
                 FechaRegistro = paciente.FechaRegistro,
                 Activo = paciente.Activo
             };
@@ -133,6 +158,8 @@ namespace Profesional.Application.Services
             paciente.DNI = dto.DNI;
             paciente.Telefono = dto.Telefono;
             paciente.Email = dto.Email;
+            paciente.Direccion = dto.Direccion;
+            paciente.ObraSocial = dto.ObraSocial;
 
             await _context.SaveChangesAsync();
 
@@ -144,6 +171,8 @@ namespace Profesional.Application.Services
                 DNI = paciente.DNI,
                 Telefono = paciente.Telefono,
                 Email = paciente.Email,
+                Direccion = paciente.Direccion,
+                ObraSocial = paciente.ObraSocial,
                 FechaRegistro = paciente.FechaRegistro,
                 Activo = paciente.Activo
             };

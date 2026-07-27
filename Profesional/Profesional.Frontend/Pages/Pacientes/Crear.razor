@@ -1,0 +1,80 @@
+﻿@page "/pacientes/crear"
+@using Profesional.Frontend.Models
+@using Profesional.Frontend.Services
+@inject PacienteService PacienteService
+@inject NavigationManager Navigation
+
+<PageTitle>Crear Paciente</PageTitle>
+
+<div class="page-header">
+    <h2>➕ Nuevo Paciente</h2>
+    <p>Completá los datos del nuevo paciente</p>
+</div>
+
+<div class="form-container">
+    <PacienteForm 
+        Paciente="@paciente" 
+        OnValidSubmit="@HandleValidSubmit" 
+        OnCancel="@Cancel"
+        IsLoading="@isLoading"
+        ErrorMessage="@errorMessage" />
+</div>
+
+@code {
+    private PacienteCreateDto paciente = new();
+    private bool isLoading = false;
+    private string? errorMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var result = await PacienteService.CreatePacienteAsync(paciente);
+            if (result != null)
+            {
+                Navigation.NavigateTo("/pacientes");
+            }
+            else
+            {
+                errorMessage = "Error al crear el paciente. Verificá los datos.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/pacientes");
+    }
+}
+
+<style>
+    .page-header {
+        margin-bottom: 25px;
+    }
+    .page-header h2 {
+        margin: 0;
+        color: #1a1a2e;
+    }
+    .page-header p {
+        margin: 5px 0 0 0;
+        color: #616161;
+    }
+    .form-container {
+        max-width: 700px;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+</style>
