@@ -1,37 +1,146 @@
 ﻿@page "/dashboard"
-@using System.Text.Json
 @using Profesional.Frontend.Models
+@using Profesional.Frontend.Services
+@using ApexCharts
 @inject NavigationManager Navigation
-@inject Microsoft.JSInterop.IJSRuntime JS
 
-<h3>Dashboard</h3>
-<p>Bienvenido, @userName!</p>
-<button class="btn btn-danger" @onclick="Logout">Cerrar Sesión</button>
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="dashboard-container">
+    <!-- Tarjetas de métricas -->
+    <div class="metricas-grid">
+        <div class="metric-card">
+            <div class="metric-icon">👤</div>
+            <div class="metric-info">
+                <span class="metric-value">@dashboardData?.TotalPacientesActivos</span>
+                <span class="metric-label">Pacientes Activos</span>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">📅</div>
+            <div class="metric-info">
+                <span class="metric-value">@dashboardData?.TotalSesionesMes</span>
+                <span class="metric-label">Sesiones este mes</span>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">⏰</div>
+            <div class="metric-info">
+                <span class="metric-value">@dashboardData?.ProximasCitas</span>
+                <span class="metric-label">Próximas citas (7 días)</span>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">📊</div>
+            <div class="metric-info">
+                <span class="metric-value">@dashboardData?.TratamientosMasUsados.Count</span>
+                <span class="metric-label">Tratamientos distintos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h4>Tratamientos más usados</h4>
+            <ApexChart TItem="TratamientoConteo"
+                       Options="@chartOptions"
+                       Width="@("100%")"
+                       Height="@("300px")">
+                <ApexPointSeries TItem="TratamientoConteo"
+                                 Items="@TratamientosChartData"
+                                 Name="Sesiones"
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="e => e.Tratamiento"
+                                 YValue="e => (decimal)e.Cantidad" />
+            </ApexChart>
+        </div>
+        <div class="chart-card">
+            <h4>Últimas sesiones</h4>
+            @if (dashboardData?.UltimasSesiones != null && dashboardData.UltimasSesiones.Any())
+            {
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Fecha</th>
+                            <th>Tratamiento</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sesion in dashboardData.UltimasSesiones)
+                        {
+                            <tr>
+                                <td>@sesion.PacienteNombre</td>
+                                <td>@sesion.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@sesion.TipoTratamiento</td>
+                                <td>
+                                    <span class="badge @(sesion.Completada ? "bg-success" : "bg-warning")">
+                                        @(sesion.Completada ? "Completada" : "Pendiente")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted text-center">No hay sesiones recientes</p>
+            }
+        </div>
+    </div>
+</div>
 
 @code {
-    private string userName = string.Empty;
+    private DashboardResponseDto? dashboardData;
+    private bool isLoading = true;
+
+    private List<TratamientoConteo> TratamientosChartData =>
+        dashboardData?.TratamientosMasUsados
+            .Select(t => new TratamientoConteo { Tratamiento = t.Key, Cantidad = t.Value })
+            .ToList() ?? new();
+
+    private ApexChartOptions<TratamientoConteo> chartOptions = new()
+    {
+        Chart = new Chart
+        {
+            Type = ChartType.Bar,
+            Height = 300,
+            Background = "transparent"
+        },
+        PlotOptions = new PlotOptions
+        {
+            Bar = new PlotOptionsBar
+            {
+                Horizontal = true,
+                DataLabels = new PlotOptionsBarDataLabels { Position = BarDataLabelPosition.Top }
+            }
+        },
+        Xaxis = new XAxis { Title = new AxisTitle { Text = "Cantidad de sesiones" } },
+        Yaxis = new List<YAxis> { new() { Title = new AxisTitle { Text = "Tratamiento" } } },
+        Colors = new List<string> { "#4fc3f7", "#81c784", "#ffb74d", "#f06292", "#ba68c8" }
+    };
 
     protected override async Task OnInitializedAsync()
     {
-        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            Navigation.NavigateTo("/login", replace: true);
-            return;
-        }
-
-        var userJson = await JS.InvokeAsync<string>("localStorage.getItem", "user");
-        if (!string.IsNullOrEmpty(userJson))
-        {
-            var user = JsonSerializer.Deserialize<AuthResponse>(userJson);
-            userName = user?.Nombre ?? "Usuario";
-        }
+        await LoadDashboard();
     }
 
-    private async Task Logout()
+    private async Task LoadDashboard()
     {
-        await JS.InvokeVoidAsync("localStorage.removeItem", "token");
-        await JS.InvokeVoidAsync("localStorage.removeItem", "user");
-        Navigation.NavigateTo("/login");
+        isLoading = true;
+        dashboardData = await DashboardService.GetDashboardDataAsync();
+        isLoading = false;
+    }
+
+    [Inject] private DashboardService DashboardService { get; set; } = null!;
+
+    private class TratamientoConteo
+    {
+        public string Tratamiento { get; set; } = string.Empty;
+        public int Cantidad { get; set; }
     }
 }
