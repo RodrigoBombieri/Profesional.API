@@ -11,11 +11,11 @@
 <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
     <div class="mb-3">
         <label for="email" class="form-label">Email</label>
-        <InputText id="email" class="form-control" @bind="loginModel.Email" />
+        <InputText id="email" class="form-control" @bind-Value="loginModel.Email" />
     </div>
     <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <InputText id="password" type="password" class="form-control" @bind="loginModel.Password" />
+        <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
     </div>
     <button type="submit" class="btn btn-primary">Ingresar</button>
     <a href="/register" class="btn btn-link">¿No tenés cuenta? Registrate</a>

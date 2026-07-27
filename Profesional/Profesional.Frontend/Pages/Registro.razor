@@ -1,4 +1,4 @@
-﻿@page "/registro"
+﻿@page "/register"
 @using Microsoft.AspNetCore.Components.Forms
 @using Profesional.Frontend.Models
 @using Profesional.Frontend.Services
@@ -11,15 +11,15 @@
 <EditForm Model="@registerModel" OnValidSubmit="@HandleRegister">
     <div class="mb-2">
         <label for="name" class="form-label">Nombre</label>
-        <InputText id="name" class="form-control" @bind="registerModel.Name" />
+        <InputText id="name" class="form-control" @bind-Value="registerModel.Nombre" />
     </div>
     <div class="mb-2">
         <label for="email" class="form-label">Email</label>
-        <InputText id="email" class="form-control" @bind="registerModel.Email" />
+        <InputText id="email" class="form-control" @bind-Value="registerModel.Email" />
     </div>
     <div class="mb-2">
         <label for="password" class="form-label">Contraseña</label>
-        <InputText id="password" type="password" class="form-control" @bind="registerModel.Password" />
+        <InputText id="password" type="password" class="form-control" @bind-Value="registerModel.Password" />
     </div>
     <button type="submit" class="btn btn-primary">Registrarse</button>
     <a href="/login" class="btn btn-link">¿Ya tenés cuenta? Ingresá</a>

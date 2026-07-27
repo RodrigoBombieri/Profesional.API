@@ -13,6 +13,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var token = await JS.InvokeAsync<string?>("localStorage.getItem", "token");
+        if (string.IsNullOrEmpty(token))
+        {
+            Navigation.NavigateTo("/login", replace: true);
+            return;
+        }
+
         var userJson = await JS.InvokeAsync<string>("localStorage.getItem", "user");
         if (!string.IsNullOrEmpty(userJson))
         {
