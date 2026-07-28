@@ -1,12 +1,27 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(Layout.MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(Layout.MainLayout)">
+                <div class="text-center py-5">
+                    <h3>404 - Página no encontrada</h3>
+                    <p>La página que buscas no existe.</p>
+                    <a href="/dashboard" class="btn btn-primary">Volver al Dashboard</a>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+<style>
+    .page-content {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

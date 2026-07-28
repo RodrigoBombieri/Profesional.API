@@ -1,0 +1,76 @@
+﻿@page "/calendario"
+@using Profesional.Frontend.Models
+@using Profesional.Frontend.Services
+@inject SesionService SesionService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Calendario de Citas</PageTitle>
+
+<div class="calendario-container">
+    <div class="calendario-header">
+        <h2>🗓️ Calendario de Citas</h2>
+        <p>Visualizá todas las sesiones programadas</p>
+    </div>
+
+    <div class="card-modern">
+        <div id="calendar" style="min-height: 500px;"></div>
+    </div>
+</div>
+
+@code {
+    private List<SesionDto>? sesiones;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sesiones = await SesionService.GetAllSesionesAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && sesiones != null)
+        {
+            await InicializarCalendario();
+        }
+    }
+
+    private async Task InicializarCalendario()
+    {
+        var eventos = sesiones?.Select(s => new
+        {
+            id = s.Id.ToString(),
+            title = $"{s.PacienteNombre} - {s.TipoTratamiento}",
+            start = s.Fecha.ToString("yyyy-MM-ddTHH:mm:ss"),
+            end = s.Fecha.AddMinutes(s.DuracionMinutos).ToString("yyyy-MM-ddTHH:mm:ss"),
+            backgroundColor = s.Completada ? "#10b981" : "#0ea5e9",
+            borderColor = s.Completada ? "#10b981" : "#0ea5e9",
+            extendedProps = new
+            {
+                pacienteId = s.PacienteId,
+                completada = s.Completada,
+                observaciones = s.Observaciones
+            }
+        }).ToArray();
+
+        await JSRuntime.InvokeVoidAsync("inicializarCalendario", eventos);
+    }
+}
+
+<style>
+    .calendario-container {
+        padding: 0;
+    }
+
+    .calendario-header {
+        margin-bottom: 25px;
+    }
+
+        .calendario-header h2 {
+            margin: 0;
+            color: #1a1a2e;
+        }
+
+        .calendario-header p {
+            margin: 5px 0 0 0;
+            color: #616161;
+        }
+</style>

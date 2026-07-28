@@ -15,6 +15,17 @@ namespace Profesional.Frontend.Services
             _httpClient = httpClient;
         }
 
+        public async Task<List<SesionDto>?> GetAllSesionesAsync()
+        {
+            var response = await _httpClient.GetAsync("api/Sesiones");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<SesionDto>>();
+            }
+            return null;
+        }
+
+
         // GET /api/Sesiones/paciente/{pacienteId}
         public async Task<List<SesionDto>?> GetSesionesByPacienteAsync(int pacienteId)
         {
