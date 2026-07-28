@@ -2,106 +2,186 @@
 @using Profesional.Frontend.Models
 @using Profesional.Frontend.Services
 @using ApexCharts
+@inject DashboardService DashboardService
 @inject NavigationManager Navigation
-
 
 <PageTitle>Dashboard</PageTitle>
 
-<div class="dashboard-container">
-    <!-- Tarjetas de métricas -->
-    <div class="metricas-grid">
-        <div class="metric-card">
-            <div class="metric-icon">👤</div>
-            <div class="metric-info">
-                <span class="metric-value">@dashboardData?.TotalPacientesActivos</span>
-                <span class="metric-label">Pacientes Activos</span>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon">📅</div>
-            <div class="metric-info">
-                <span class="metric-value">@dashboardData?.TotalSesionesMes</span>
-                <span class="metric-label">Sesiones este mes</span>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon">⏰</div>
-            <div class="metric-info">
-                <span class="metric-value">@dashboardData?.ProximasCitas</span>
-                <span class="metric-label">Próximas citas (7 días)</span>
-            </div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-icon">📊</div>
-            <div class="metric-info">
-                <span class="metric-value">@dashboardData?.TratamientosMasUsados.Count</span>
-                <span class="metric-label">Tratamientos distintos</span>
-            </div>
-        </div>
+@if (isLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Cargando dashboard...</p>
     </div>
+}
+else
+{
+    <div class="dashboard-container">
 
-    <!-- Gráficos -->
-    <div class="charts-grid">
-        <div class="chart-card">
-            <h4>Tratamientos más usados</h4>
-            <ApexChart TItem="TratamientoConteo"
-                       Options="@chartOptions"
-                       Width="@("100%")"
-                       Height="@("300px")">
-                <ApexPointSeries TItem="TratamientoConteo"
-                                 Items="@TratamientosChartData"
-                                 Name="Sesiones"
-                                 SeriesType="SeriesType.Bar"
-                                 XValue="e => e.Tratamiento"
-                                 YValue="e => (decimal)e.Cantidad" />
-            </ApexChart>
+        <!-- Tarjetas de métricas -->
+        <div class="metricas-grid">
+
+            <div class="metric-card" style="border-left:4px solid #4fc3f7;">
+                <div class="metric-icon">👤</div>
+                <div class="metric-info">
+                    <span class="metric-value">@dashboardData?.TotalPacientesActivos</span>
+                    <span class="metric-label">Pacientes Activos</span>
+                </div>
+            </div>
+
+            <div class="metric-card" style="border-left:4px solid #81c784;">
+                <div class="metric-icon">📅</div>
+                <div class="metric-info">
+                    <span class="metric-value">@dashboardData?.TotalSesionesMes</span>
+                    <span class="metric-label">Sesiones este mes</span>
+                </div>
+            </div>
+
+            <div class="metric-card" style="border-left:4px solid #ffb74d;">
+                <div class="metric-icon">⏰</div>
+                <div class="metric-info">
+                    <span class="metric-value">@dashboardData?.ProximasCitas</span>
+                    <span class="metric-label">Próximas citas (7 días)</span>
+                </div>
+            </div>
+
+            <div class="metric-card" style="border-left:4px solid #f06292;">
+                <div class="metric-icon">📊</div>
+                <div class="metric-info">
+                    <span class="metric-value">@dashboardData?.TratamientosMasUsados.Count</span>
+                    <span class="metric-label">Tratamientos distintos</span>
+                </div>
+            </div>
+
         </div>
-        <div class="chart-card">
-            <h4>Últimas sesiones</h4>
-            @if (dashboardData?.UltimasSesiones != null && dashboardData.UltimasSesiones.Any())
-            {
-                <table class="table table-striped table-sm">
-                    <thead>
-                        <tr>
-                            <th>Paciente</th>
-                            <th>Fecha</th>
-                            <th>Tratamiento</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var sesion in dashboardData.UltimasSesiones)
-                        {
+
+        <!-- Gráficos -->
+        <div class="charts-grid">
+
+            <!-- Tratamientos -->
+            <div class="chart-card">
+
+                <h4>📊 Tratamientos más usados</h4>
+
+                @if (TratamientosChartData.Any())
+                {
+                    <ApexChart TItem="TratamientoConteo"
+                               Options="@chartOptions"
+                               Width="@("100%")"
+                               Height="@("300px")">
+
+                        <ApexPointSeries TItem="TratamientoConteo"
+                                         Items="@TratamientosChartData"
+                                         Name="Sesiones"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="e => e.Tratamiento"
+                                         YValue="e => (decimal)e.Cantidad" />
+
+                    </ApexChart>
+                }
+                else
+                {
+                    <p class="text-center text-muted">
+                        No hay datos para mostrar.
+                    </p>
+                }
+
+            </div>
+
+            <!-- Últimas sesiones -->
+            <div class="chart-card">
+
+                <h4>📋 Últimas sesiones</h4>
+
+                @if (dashboardData?.UltimasSesiones != null &&
+                    dashboardData.UltimasSesiones.Any())
+                {
+                    <table class="table table-striped table-sm">
+
+                        <thead>
                             <tr>
-                                <td>@sesion.PacienteNombre</td>
-                                <td>@sesion.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>@sesion.TipoTratamiento</td>
-                                <td>
-                                    <span class="badge @(sesion.Completada ? "bg-success" : "bg-warning")">
-                                        @(sesion.Completada ? "Completada" : "Pendiente")
-                                    </span>
-                                </td>
+                                <th>Paciente</th>
+                                <th>Fecha</th>
+                                <th>Tratamiento</th>
+                                <th>Estado</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p class="text-muted text-center">No hay sesiones recientes</p>
-            }
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var sesion in dashboardData.UltimasSesiones.Take(5))
+                            {
+                                <tr>
+
+                                    <td>@sesion.PacienteNombre</td>
+
+                                    <td>
+                                        @sesion.Fecha.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td>@sesion.TipoTratamiento</td>
+
+                                    <td>
+                                        <span class="badge @(sesion.Completada ? "bg-success" : "bg-warning")">
+                                            @(sesion.Completada ? "Completada" : "Pendiente")
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                }
+                else
+                {
+                    <p class="text-center text-muted">
+                        No hay sesiones recientes.
+                    </p>
+                }
+
+            </div>
+
         </div>
+
+        <!-- Botones -->
+        <div class="mt-4 text-center">
+
+            <button class="btn btn-primary me-2"
+                    @onclick="LoadDashboard"
+                    disabled="@isLoading">
+
+                @(isLoading ? "Cargando..." : "🔄 Actualizar Dashboard")
+
+            </button>
+
+            <button class="btn btn-success"
+                    @onclick="ExportarReporte">
+
+                📥 Exportar Reporte
+
+            </button>
+
+        </div>
+
     </div>
-</div>
+}
 
 @code {
+
     private DashboardResponseDto? dashboardData;
     private bool isLoading = true;
 
     private List<TratamientoConteo> TratamientosChartData =>
         dashboardData?.TratamientosMasUsados
-            .Select(t => new TratamientoConteo { Tratamiento = t.Key, Cantidad = t.Value })
-            .ToList() ?? new();
+            .Select(t => new TratamientoConteo
+            {
+                Tratamiento = t.Key,
+                Cantidad = t.Value
+            })
+            .ToList()
+        ?? new();
 
     private ApexChartOptions<TratamientoConteo> chartOptions = new()
     {
@@ -109,19 +189,57 @@
         {
             Type = ChartType.Bar,
             Height = 300,
-            Background = "transparent"
+            Background = "transparent",
+            Toolbar = new Toolbar
+            {
+                Show = false
+            }
         },
+
         PlotOptions = new PlotOptions
         {
             Bar = new PlotOptionsBar
             {
                 Horizontal = true,
-                DataLabels = new PlotOptionsBarDataLabels { Position = BarDataLabelPosition.Top }
+                DataLabels = new PlotOptionsBarDataLabels
+                {
+                    Position = BarDataLabelPosition.Top
+                }
             }
         },
-        Xaxis = new XAxis { Title = new AxisTitle { Text = "Cantidad de sesiones" } },
-        Yaxis = new List<YAxis> { new() { Title = new AxisTitle { Text = "Tratamiento" } } },
-        Colors = new List<string> { "#4fc3f7", "#81c784", "#ffb74d", "#f06292", "#ba68c8" }
+
+        DataLabels = new DataLabels
+        {
+            Enabled = true
+        },
+
+        Xaxis = new XAxis
+        {
+            Title = new AxisTitle
+            {
+                Text = "Cantidad de sesiones"
+            }
+        },
+
+        Yaxis = new List<YAxis>
+        {
+            new()
+            {
+                Title = new AxisTitle
+                {
+                    Text = "Tratamiento"
+                }
+            }
+        },
+
+        Colors = new List<string>
+        {
+            "#4fc3f7",
+            "#81c784",
+            "#ffb74d",
+            "#f06292",
+            "#ba68c8"
+        }
     };
 
     protected override async Task OnInitializedAsync()
@@ -132,15 +250,22 @@
     private async Task LoadDashboard()
     {
         isLoading = true;
+        StateHasChanged();
+
         dashboardData = await DashboardService.GetDashboardDataAsync();
+
         isLoading = false;
     }
 
-    [Inject] private DashboardService DashboardService { get; set; } = null!;
+    private void ExportarReporte()
+    {
+        Navigation.NavigateTo("/api/reportes/pacientes", true);
+    }
 
     private class TratamientoConteo
     {
         public string Tratamiento { get; set; } = string.Empty;
         public int Cantidad { get; set; }
     }
+
 }

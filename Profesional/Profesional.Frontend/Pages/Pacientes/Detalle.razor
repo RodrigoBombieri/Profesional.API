@@ -4,6 +4,7 @@
 @inject PacienteService PacienteService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject NotificationService NotificationService
 
 <PageTitle>Detalle del Paciente</PageTitle>
 
@@ -153,16 +154,17 @@ else
 
     private async Task EliminarPaciente()
     {
-        if (await JSRuntime.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar a {paciente?.Nombre} {paciente?.Apellido}?"))
+        if (await NotificationService.ShowConfirmAsync("Confirmar eliminación", $"¿Estás seguro de eliminar a {paciente?.Nombre} {paciente?.Apellido}?"))
         {
             var result = await PacienteService.DeletePacienteAsync(Id);
             if (result)
             {
+                await NotificationService.ShowSuccessAsync("Paciente eliminado correctamente");
                 Navigation.NavigateTo("/pacientes");
             }
             else
             {
-                errorMessage = "Error al eliminar el paciente";
+                await NotificationService.ShowErrorAsync("Error al eliminar el paciente");
             }
         }
     }

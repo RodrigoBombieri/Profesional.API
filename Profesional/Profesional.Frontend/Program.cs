@@ -23,5 +23,6 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<PacienteService>();
 builder.Services.AddScoped<SesionService>();
 builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<NotificationService>();
 
 await builder.Build().RunAsync();

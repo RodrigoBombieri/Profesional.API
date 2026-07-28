@@ -19,6 +19,9 @@
                 <button class="btn btn-primary btn-sm" @onclick="Search">🔍 Buscar</button>
             </div>
             <button class="btn btn-success" @onclick="GoToCreate">➕ Nuevo Paciente</button>
+            <button class="btn btn-secondary" @onclick="ExportarReporte">
+                📥 Exportar Excel
+            </button>
         </div>
     </div>
 
@@ -164,4 +167,9 @@
     private void Editar(int id) => NavigationManager.NavigateTo($"/pacientes/editar/{id}");
 
     [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+
+    private void ExportarReporte()
+    {
+        NavigationManager.NavigateTo("/api/reportes/pacientes", true);
+    }
 }
