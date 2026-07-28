@@ -13,22 +13,33 @@
     </div>
 
     <div class="card-modern">
-        <div id="calendar" style="min-height: 500px;"></div>
+        @if (isLoading)
+        {
+            <LoadingSkeleton />
+        }
+        else
+        {
+            <div id="calendar" style="min-height: 500px;"></div>
+        }
     </div>
 </div>
 
 @code {
     private List<SesionDto>? sesiones;
+    private bool isLoading = true;
+    private bool calendarioInicializado = false;
 
     protected override async Task OnInitializedAsync()
     {
         sesiones = await SesionService.GetAllSesionesAsync();
+        isLoading = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && sesiones != null)
+        if (!calendarioInicializado && !isLoading)
         {
+            calendarioInicializado = true;
             await InicializarCalendario();
         }
     }

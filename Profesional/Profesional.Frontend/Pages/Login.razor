@@ -6,25 +6,34 @@
 @inject NavigationManager Navigation
 @inject Microsoft.JSInterop.IJSRuntime JS
 
-<h3>Iniciar Sesión</h3>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">🩺</div>
+            <h3>Iniciar Sesión</h3>
+            <p class="text-muted">Ingresá para gestionar tu consultorio</p>
+        </div>
 
-<EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
-    <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <InputText id="email" class="form-control" @bind-Value="loginModel.Email" />
-    </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
-    </div>
-    <button type="submit" class="btn btn-primary">Ingresar</button>
-    <a href="/register" class="btn btn-link">¿No tenés cuenta? Registrate</a>
-</EditForm>
+        <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="loginModel.Email" />
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
+            </div>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger mt-3">@errorMessage</div>
-}
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+
+            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+            <a href="/register" class="auth-link">¿No tenés cuenta? Registrate</a>
+        </EditForm>
+    </div>
+</div>
 
 @code {
     private LoginRequest loginModel = new();
