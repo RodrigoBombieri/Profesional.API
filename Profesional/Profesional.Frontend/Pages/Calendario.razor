@@ -62,7 +62,7 @@
             }
         }).ToArray();
 
-        await JSRuntime.InvokeVoidAsync("inicializarCalendario", eventos);
+        await JSRuntime.InvokeVoidAsync("inicializarCalendario", new object?[] { eventos });
     }
 }
 
