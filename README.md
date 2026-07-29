@@ -4,9 +4,9 @@ Sistema de gestión para profesionales de la salud (kinesiología) que permite a
 
 ## Capturas de pantalla
 
-| Dashboard | Reportes | Swagger (API) |
-|---|---|---|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Reportes](docs/screenshots/reportes.png) | ![Swagger](docs/screenshots/swagger.png) |
+| Dashboard | Reportes | Swagger (API) | Calendario |
+|---|---|---|---|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Reportes](docs/screenshots/reportes.png) | ![Swagger](docs/screenshots/swagger.png) |![Calendario](docs/screenshots/calendario.png)
 
 ## Características
 
