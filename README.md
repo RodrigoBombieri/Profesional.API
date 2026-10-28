@@ -1,5 +1,7 @@
 # Profesional.API
 
+[![CI](https://github.com/RodrigoBombieri/Profesional.API/actions/workflows/ci.yml/badge.svg)](https://github.com/RodrigoBombieri/Profesional.API/actions/workflows/ci.yml)
+
 Sistema de gestión para profesionales de la salud (kinesiología) que permite administrar pacientes, sesiones/turnos y generar reportes. Compuesto por una API REST en .NET 8 (Clean Architecture) y un frontend en Blazor WebAssembly.
 
 ## Capturas de pantalla
