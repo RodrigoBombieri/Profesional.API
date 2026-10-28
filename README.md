@@ -33,8 +33,10 @@ Sistema de gestión para profesionales de la salud (kinesiología) que permite a
 - Blazor WebAssembly (.NET 7)
 - Blazor-ApexCharts para gráficos
 
-**Testing**
+**Testing y CI**
 - xUnit, Moq, FluentAssertions
+- EF Core InMemory para probar los servicios sin una base real
+- GitHub Actions: compila y corre los tests en cada push y pull request
 
 ## Arquitectura
 
@@ -119,9 +121,22 @@ La documentación interactiva completa está disponible en Swagger (`/swagger`) 
 
 ## Tests
 
+El proyecto `Profesional.UnitTests` cubre la capa de aplicación con 26 tests unitarios:
+
+- **Pacientes:** alta, listado con filtro de inactivos, búsqueda, paginado y orden, baja lógica y edición.
+- **Sesiones:** alta con validación de paciente activo, listados, completar y borrado.
+- **Autenticación:** registro con hash BCrypt, token JWT, email duplicado y login con credenciales inválidas.
+- **Paginación:** tope de tamaño de página y cálculo de páginas.
+
+Los servicios se prueban contra un `DbContext` en memoria (EF Core InMemory), por lo que no necesitan SQL Server para correr.
+
 ```bash
 dotnet test Profesional/tests/Profesional.UnitTests
 ```
+
+## Integración continua
+
+El workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) corre en cada push y pull request: instala .NET 8, restaura dependencias, compila en Release y ejecuta los tests. El estado actual se ve en el badge de arriba.
 
 ## Configuración de JWT
 
